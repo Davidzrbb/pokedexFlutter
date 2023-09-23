@@ -15,6 +15,7 @@ class Welcome extends StatefulWidget {
 class _WelcomeState extends State<Welcome> {
   final ScrollController _scrollController = ScrollController();
   bool _loading = true;
+  bool _loadingMore = false;
   String? _error;
   int _pokemonDisplay = 0;
   final List<Pokemon> _pokemon = [];
@@ -33,6 +34,9 @@ class _WelcomeState extends State<Welcome> {
   }
 
   _getMorePokemon() {
+    setState(() {
+      _loadingMore = true;
+    });
     fetchPokemonFutures.clear();
     for (var i = _pokemonDisplay + 1; i <= _pokemonDisplay + 10; i++) {
       fetchPokemonFutures.add(Service.getPokemonById(i));
@@ -44,13 +48,15 @@ class _WelcomeState extends State<Welcome> {
 
     Future.wait(fetchPokemonFutures).then((pokemonList) {
       setState(() {
-        _loading = false;
         _pokemon.addAll(
             pokemonList.where((pokemon) => pokemon != null).cast<Pokemon>());
         _pokemon.sort((a, b) => a.pokedexId.compareTo(b.pokedexId));
+        _loadingMore = false;
+        _loading = false;
       });
     }).catchError((error) {
       setState(() {
+        _loadingMore = false;
         _loading = false;
         _error = error.toString();
       });
@@ -84,13 +90,23 @@ class _WelcomeState extends State<Welcome> {
         child: Text('Hey, y\'a pas de pokemon ici !'),
       );
     }
-
-    return ListView.builder(
-      itemExtent: 80,
+    return GridView.builder(
       itemCount: _pokemon.length + 1,
       controller: _scrollController,
       itemBuilder: (context, index) {
         if (index == _pokemon.length) {
+          if (_loadingMore) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            //empty container to avoid error
+            return IconButton(
+              onPressed: () => _getMorePokemon(),
+              icon: const Icon(Icons.expand_more, color: Colors.red,size:
+                40,),
+            );
+          }
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -100,6 +116,10 @@ class _WelcomeState extends State<Welcome> {
           pokemon: pokemon,
         );
       },
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+      ),
+      shrinkWrap: true,
     );
   }
 }
