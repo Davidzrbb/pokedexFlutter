@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "943848532066",
+    "project_id": "sandbox-flutter-4424a",
+    "storage_bucket": "sandbox-flutter-4424a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:943848532066:android:6e88146da4bf40c7a0093b",
+        "android_client_info": {
+          "package_name": "com.example.sandbox_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDtpT0IbUlidDFbjYLOwBp2kqi0aLmqhco"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
