@@ -5,8 +5,10 @@ import 'package:sandbox_app/webservices/service.dart';
 import '../utils_widget/app_bar.dart';
 import '../utils_widget/bottom_navigation.dart';
 
+List<String> listViewPokemon = ['1', '2', '3', '4'];
+
 class Welcome extends StatefulWidget {
-  const Welcome({super.key});
+  const Welcome({Key? key}) : super(key: key);
 
   @override
   State<Welcome> createState() => _WelcomeState();
@@ -16,13 +18,15 @@ class _WelcomeState extends State<Welcome> {
   final ScrollController _scrollController = ScrollController();
   bool _loading = true;
   bool _loadingMore = false;
+
   String? _error;
   int _pokemonDisplay = 0;
   final List<Pokemon> _pokemon = [];
+  int crossAxisCount = 2; // Default value
   List<Future> fetchPokemonFutures = [];
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _getMorePokemon();
     _scrollController.addListener(() {
@@ -33,7 +37,7 @@ class _WelcomeState extends State<Welcome> {
     });
   }
 
-  _getMorePokemon() {
+  void _getMorePokemon() {
     setState(() {
       _loadingMore = true;
     });
@@ -73,6 +77,8 @@ class _WelcomeState extends State<Welcome> {
   }
 
   Widget _buildContent(BuildContext context) {
+    int newCrossAxisCount = 2; // Default value
+    String dropdownValue = listViewPokemon[2];
     if (_loading) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -90,36 +96,73 @@ class _WelcomeState extends State<Welcome> {
         child: Text('Hey, y\'a pas de pokemon ici !'),
       );
     }
-    return GridView.builder(
-      itemCount: _pokemon.length + 1,
-      controller: _scrollController,
-      itemBuilder: (context, index) {
-        if (index == _pokemon.length) {
-          if (_loadingMore) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            //empty container to avoid error
-            return IconButton(
-              onPressed: () => _getMorePokemon(),
-              icon: const Icon(Icons.expand_more, color: Colors.red,size:
-                40,),
-            );
-          }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        final pokemon = _pokemon[index];
-        return TilePokemon(
-          pokemon: pokemon,
-        );
-      },
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
+    return SafeArea(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 20, bottom: 10),
+            child: DropdownMenu<String>(
+
+              label: const Text('Nombre de colonnes'),
+              initialSelection: newCrossAxisCount.toString(),
+              onSelected: (String? value) {
+                setState(() {
+                  dropdownValue = value ?? '2';
+                });
+                if (value == '1') {
+                  newCrossAxisCount = 1;
+                } else if (value == '2') {
+                  newCrossAxisCount = 2;
+                } else if (value == '3') {
+                  newCrossAxisCount = 3;
+                } else if (value == '4') {
+                  newCrossAxisCount = 4;
+                }
+
+                setState(() {
+                  crossAxisCount = newCrossAxisCount;
+                });
+              },
+              dropdownMenuEntries: listViewPokemon
+                  .map<DropdownMenuEntry<String>>((String value) {
+                return DropdownMenuEntry<String>(value: value, label: value);
+              }).toList(),
+            ),
+          ),
+          Expanded(
+            child: GridView.builder(
+              itemCount: _pokemon.length + 1,
+              controller: _scrollController,
+              itemBuilder: (context, index) {
+                if (index == _pokemon.length) {
+                  if (_loadingMore) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    return IconButton(
+                      onPressed: () => _getMorePokemon(),
+                      icon: const Icon(
+                        Icons.downloading,
+                        color: Colors.red,
+                        size: 40,
+                      ),
+                    );
+                  }
+                }
+                final pokemon = _pokemon[index];
+                return TilePokemon(
+                  pokemon: pokemon,
+                );
+              },
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+              ),
+              shrinkWrap: true,
+            ),
+          ),
+        ],
       ),
-      shrinkWrap: true,
     );
   }
 }

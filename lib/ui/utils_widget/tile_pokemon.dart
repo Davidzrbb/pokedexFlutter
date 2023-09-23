@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../webservices/models/pokemon.dart';
 
 class TilePokemon extends StatelessWidget {
@@ -21,11 +22,11 @@ class TilePokemon extends StatelessWidget {
             flex: 5,
             child: CachedNetworkImage(
               imageUrl: pokemon.url,
-              placeholder: (context, url) => Container(
-                width: 200,
-                height: 200,
-                child: const Center(
-                  child: CircularProgressIndicator(),
+              placeholder: (context, url) => Shimmer.fromColors(
+                baseColor: Colors.grey.shade300,
+                highlightColor: Colors.grey.shade100,
+                child: Container(
+                  color: Colors.white,
                 ),
               ),
               errorWidget: (context, url, error) => const Icon(Icons.error),
