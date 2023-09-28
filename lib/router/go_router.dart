@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sandbox_app/ui/screens/sign_in.dart';
 import 'package:sandbox_app/ui/screens/sign_up.dart';
-import 'package:sandbox_app/ui/screens/welcome.dart';
+import 'package:sandbox_app/ui/screens/welcome_parent.dart';
 
 import '../business/auth.dart';
 
@@ -60,7 +60,7 @@ final GoRouter router = GoRouter(
         pageBuilder: (context, state) => buildPageWithDefaultTransition<void>(
           context: context,
           state: state,
-          child: const Welcome(),
+          child: const WelcomeParent(),
         ),
       ),
     ],
